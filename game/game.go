@@ -4,13 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"os"
+    // "github.com/rdawson46/ttt/utils"
 )
 
 type Game struct {
     player1   player
     player2   player
     Board     *Board
-    completed bool
+    Completed bool
     turn      bool
 }
 
@@ -48,8 +49,8 @@ func NewGame(type1, type2 int) Game {
 }
 
 // check for a winner
-func (g Game) IsOver() bool {
-    return false
+func (g Game) IsWinner() (bool, rune) {
+    return false, ' '
 }
 
 func (g Game) IsComputerTurn() bool {
@@ -89,7 +90,7 @@ func (g Game) MakeHumanMove(pos int) (Game, error) {
     }
 }
 
-func (g Game) TempFunc() int {
+func (g Game) MinMax() int {
     return 0
 }
 
@@ -114,7 +115,7 @@ func (g Game) MakeComputerMove(pos int) (Game, error) {
 
 
 func (g Game) MakeMove(pos int) (Game, error) {
-    if g.completed {
+    if g.Completed || !g.SpotsRemaining() {
         return g, errors.New("Game Over")
     }
 
@@ -122,14 +123,11 @@ func (g Game) MakeMove(pos int) (Game, error) {
         return g, errors.New("Invalid location")
     }
 
-    var team rune
     var res bool
 
     if g.turn {
-        team = 'X'
         res = g.player1.makeMove(g.Board, pos)
     } else {
-        team = 'Y'
         res = g.player2.makeMove(g.Board, pos)
     }
 
@@ -138,12 +136,23 @@ func (g Game) MakeMove(pos int) (Game, error) {
     }
 
     // check for winner
-    if g.completed = g.IsOver(); g.completed {
-        return g, errors.New(fmt.Sprintf("Winner is %c\n", team))
+    var winner rune
+    if g.Completed, winner = g.IsWinner(); g.Completed {
+        return g, errors.New(fmt.Sprintf("Winner is %c\n", winner))
     }
 
     g.turn = !g.turn
 
     // switch current player
     return g, nil
+}
+
+func (g Game) SpotsRemaining() bool {
+    for _, x := range g.Board.Grid {
+        if x == ' ' {
+            return true
+        }
+    }
+
+    return false
 }

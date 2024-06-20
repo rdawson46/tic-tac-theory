@@ -36,7 +36,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         case "r":
             return Initialize(), nil
         default:
-            if m.game.IsOver() {
+            if m.game.Completed {
                 break
             }
 
@@ -50,7 +50,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
             x -= 1
 
-            // TODO: move this check to game function
             g, err := m.game.MakeHumanMove(x)
 
             if err != nil {
@@ -77,27 +76,29 @@ func (m Model) View() string {
     alternate := true
 
     for a, x := range m.game.Board.Grid {
-        for b, y := range x {
-            var block_text string
-            if y == ' ' {
-                block_text = fmt.Sprintf("%d", (a + 1) * (b + 1))
-            } else {
-                block_text = string(y)
-            }
-
-            if alternate {
-                block := even.Render(block_text)
-                s = fmt.Sprintf("%s %s", s, block)
-            } else {
-                block := odd.Render(block_text)
-                s = fmt.Sprintf("%s %s", s, block)
-            }
-
-            alternate = !alternate
+        var block_text string
+        if x == ' ' {
+            block_text = fmt.Sprintf("%d", (a + 1))
+        } else {
+            block_text = string(x)
         }
 
-        s = fmt.Sprintf("%s\n", s)
+        if alternate {
+            block := even.Render(block_text)
+            s = fmt.Sprintf("%s %s", s, block)
+        } else {
+            block := odd.Render(block_text)
+            s = fmt.Sprintf("%s %s", s, block)
+        }
+
+        if a % 3 == 2 {
+            s += "\n"
+        }
+
+        alternate = !alternate
     }
+
+    s += fmt.Sprintf("%s", m.msg)
 
     return s
 }
@@ -113,7 +114,7 @@ func (m Model) Init() tea.Cmd {
 // Cmd for computer to take a turn
 func computerTurn(game game.Game) tea.Cmd {
     return func() tea.Msg {
-        x := game.TempFunc()
+        x := game.MinMax()
         return computerPlayerMsg{ pos: x }
     }
 }
@@ -123,7 +124,7 @@ type computerPlayerMsg struct {
 }
 
 func main() {
-    p := tea.NewProgram(Initialize(), tea.WithAltScreen())
+    p := tea.NewProgram(Initialize())
 
     if _, err := p.Run(); err != nil {
         fmt.Println("broke:", err)

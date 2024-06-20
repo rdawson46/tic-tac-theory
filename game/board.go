@@ -1,27 +1,24 @@
 package game
 
 type Board struct {
-    Grid [3][3]rune
+    Grid [9]rune
 }
 
 func newBoard() *Board {
-    x := [3][3]rune {
-        {' ', ' ', ' '},
-        {' ', ' ', ' '},
-        {' ', ' ', ' '},
+    x := [9]rune {
+        ' ', ' ', ' ',
+        ' ', ' ', ' ',
+        ' ', ' ', ' ',
     }
 
     return &Board{Grid: x}
 }
 
 func (b *Board) makeMove(pos int, team rune) bool {
-    x := pos / 3
-    y := pos % 3
-
-    if b.Grid[x][y] != ' ' {
+    if b.Grid[pos] != ' ' {
         return false
     }
 
-    b.Grid[x][y] = team
+    b.Grid[pos] = team
     return true
 }
