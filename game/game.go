@@ -4,7 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
-    // "github.com/rdawson46/ttt/utils"
+
+	"github.com/rdawson46/ttt/utils"
 )
 
 type Game struct {
@@ -50,6 +51,45 @@ func NewGame(type1, type2 int) Game {
 
 // check for a winner
 func (g Game) IsWinner() (bool, rune) {
+    var team rune
+    var b bool
+
+    // row checks
+    if b, team = utils.Check(g.Board.Grid, 0, 1, 2); b {
+        return b, team
+    }
+
+    if b, team = utils.Check(g.Board.Grid, 3, 4, 5); b {
+        return b, team
+    }
+    
+    if b, team = utils.Check(g.Board.Grid, 6, 7, 8); b {
+        return b, team
+    }
+
+    // column checks
+    if b, team = utils.Check(g.Board.Grid, 0, 3, 6); b {
+        return b, team
+    }
+
+    if b, team = utils.Check(g.Board.Grid, 1, 4, 7); b {
+        return b, team
+    }
+
+    if b, team = utils.Check(g.Board.Grid, 2, 5, 8); b {
+        return b, team
+    }
+
+    // diagonal checks
+    if b, team = utils.Check(g.Board.Grid, 0, 4, 8); b {
+        return b, team
+    }
+
+    if b, team = utils.Check(g.Board.Grid, 2, 4, 6); b {
+        return b, team
+    }
+
+
     return false, ' '
 }
 

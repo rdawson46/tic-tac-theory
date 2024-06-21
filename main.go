@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/charmbracelet/lipgloss"
-	"fmt"
-	"os"
+    "github.com/charmbracelet/lipgloss"
+    "fmt"
+    "os"
     "strconv"
 
-	tea "github.com/charmbracelet/bubbletea"
+    tea "github.com/charmbracelet/bubbletea"
     "github.com/rdawson46/ttt/game"
 )
 
@@ -66,6 +66,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             return m, nil
         }
     case computerPlayerMsg:
+        g, err := m.game.MakeComputerMove(msg.pos)
+
+        if err != nil {
+            m.msg = err.Error()
+        } else {
+            m.msg = ""
+        }
+
+        m.game = g
+
+        if g.IsComputerTurn() {
+            return m, computerTurn(m.game)
+        }
         return m, nil
     }
     return m, nil

@@ -1,23 +1,32 @@
 package utils
 
-func All(x [3]rune) bool {
-    if len(x) == 0 {
-        return true
-    }
+import "math"
 
-    first := x[0]
+func max(x[] int) int {
+    ret := math.MinInt
 
-    if first == ' ' {
-        return false
-    }
-
-    for _, a := range x {
-        if first != a {
-            return false
+    for _, v := range x {
+        if v > ret {
+            ret = v
         }
     }
 
-    return true
+    return ret
+}
+
+func Check(x [9]rune, idx ...int) (bool, rune) {
+    if len(idx) == 0 || max(idx) > 8 {
+        return false, ' '
+    }
+
+    val := x[idx[0]]
+
+    for _, i := range idx {
+        if x[i] != val || x[i] == ' ' {
+            return false, ' '
+        }
+    }
+    return true, val
 }
 
 func ForEach[K any, B any](x []K, f func(K) B) []B {
